@@ -1,75 +1,142 @@
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+import logging
+import telegram
+from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
+from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
+                          ConversationHandler, CallbackQueryHandler)
+from gql import gql, Client, AIOHTTPTransport
 from config import TOKEN
-import requests
+from pony.orm import *
 import json
+import datetime
+from db_tools import *
+
+transport = AIOHTTPTransport(url='https://api.thegraph.com/subgraphs/name/miracle2k/all-the-keeps')
+client = Client(transport=transport, fetch_schema_from_transport=True)
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+db.generate_mapping(create_tables=True)
+
+
+def node_stats(): #TODO Move to utils (at the end)
+    """Send node stats when the command /stats is issued."""
+    query = gql(
+        """
+		query GetOperators($id: ID!) {
+			operators(where: {id: $id}) {
+				address
+				bonded
+				unboundAvailable
+				stakedAmount
+				totalFaultCount
+				involvedInFaultCount
+				attributableFaultCount
+				totalBeaconRewards
+				totalETHRewards
+				totalTBTCRewards
+				activeKeepCount
+				totalKeepCount
+			}
+		}
+		"""
+    )
+    params = {
+        "id": "0xc6325112d6d0a1bb44b3ee2da080a79e99fe4cfe",
+    }
+    result = client.execute(query, variable_values=params)
+    return json.dumps(result, indent=4)
+
+
+reply_keyboard = [['📝New Address', '📖My Addresses'],
+                  ['📨Feedback', '⚙️Settings']]
+markup = ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True)
+bot = telegram.Bot(token=TOKEN)
+
+ADD_ADDRESS, USER_ADDRESSES, STORE_ADDRESS, VERIFY_ADDRESS, FEEDBACK = range(5)
 
 
 def start(update, context):
-	"""Send a message when the command /start is issued."""
-	update.message.reply_text('Hello, my friend! I will notify you about some events!')
+    update.message.reply_text(text='Hello, my friend! I will notify you about some events!',
+                              reply_markup=markup)
 
 
-def help_command(update, context):
-	"""Send a message when the command /help is issued."""
-	update.message.reply_text('I have not "Help" functions yet=(')
+def add_address(update, context):
+    update.message.reply_text('If you want to cancel, send me /cancel\nPut your address:')
+    return STORE_ADDRESS
 
 
-def stats(update, context):
-	"""Send a result of query when the command /stats is issued."""
-	query = """query {
-  tbtcdepositTokens(first: 5) {
-    id
-    deposit {
-      id
-    }
-    tokenID
-    owner
-  }
-  createdEvents(first: 5) {
-    id
-    submitter
-    transactionHash
-    timestamp
-  }
-}"""
-	url = 'https://api.thegraph.com/subgraphs/name/miracle2k/all-the-keeps'
-	r = requests.post(url, json={'query': query})
-	print(r.status_code)
-	print(json.dumps(r.json(), indent=4))
-	update.message.reply_text(json.dumps(r.json(), indent=4))
+def store_address(update, context): #TODO add buttons
+    update.message.reply_text(
+        'If your address correct - put "Correct" or "Resend" for resend your wallet. (there is will be button)')
+    return VERIFY_ADDRESS
 
 
-# def echo(update, context):
-#     """Echo the user message."""
-#     update.message.reply_text(update.message.text)
+def success_stored(update, context):
+    update.message.reply_text('Address added!')
+    return ConversationHandler.END
+
+
+def resend_address(update, context):
+    update.message.reply_text('Resend your address:')
+    return STORE_ADDRESS
+
+
+def incorrect_address(update, context):
+    update.message.reply_text('Incorrect address. Please resend address started with 0x')
+    return STORE_ADDRESS
+
+
+def cancel(update, context): #TODO add button
+    update.message.reply_text('Bye!')
+    return ConversationHandler.END
+
+
+def get_msg(blockchain, user):
+    # this is where you put the main logic wether user should be notified or not
+    if user.user_data['sub'] in blockchain:  # TODO Solve how to check users in gql return
+        return blockchain[user.user_data['sub']]
+
+
+def get_time_from_db():  # TODO add import from db
+    pass
+
+
+@db_session
+def alerts(context):
+    # Send query to subgraph and store results of call in variable blockchain_data
+    timestamp = get_time_from_db()  # TODO create function to get the last date from Column
+    if timestamp == 0:  # TODO Are we need it?
+        timestamp = datetime.now()
+    blockchain_data = node_stats()  # TODO Code function for ALERT evernts
+    users = []  # TODO Solve how to store and retrieve users/wallets
+    for user in users:
+        msg = get_msg(blockchain_data, user)
+        if msg:
+            context.bot.send_message(user.user_id, msg)
 
 
 def main():
-	"""Start the bot."""
-	# Create the Updater and pass it your bot's token.
-	# Make sure to set use_context=True to use the new context based callbacks
-	# Post version 12 this will no longer be necessary
-	updater = Updater(TOKEN, use_context=True)
+    """Start the bot."""
+    updater = Updater(TOKEN, use_context=True)
+    dp = updater.dispatcher
 
-	# Get the dispatcher to register handlers
-	dp = updater.dispatcher
-
-	# on different commands - answer in Telegram
-	dp.add_handler(CommandHandler("start", start))
-	dp.add_handler(CommandHandler("help", help_command))
-	dp.add_handler(CommandHandler("stats", stats))
-
-	# on noncommand i.e message - echo the message on Telegram
-	# dp.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
-
-	# Start the Bot
-	updater.start_polling()
-
-	# Run the bot until you press Ctrl-C or the process receives SIGINT,
-	# SIGTERM or SIGABRT. This should be used most of the time, since
-	# start_polling() is non-blocking and will stop the bot gracefully.
-	updater.idle()
+    dp.add_handler(CommandHandler("start", start))
+    conv_handler = ConversationHandler( #TODO May be move it to handlers.py for importing
+        entry_points=[MessageHandler(Filters.regex('^(📝New Address)$'), add_address)],
+        states={
+            STORE_ADDRESS: [MessageHandler(Filters.regex('^(0x)'), store_address),
+                            MessageHandler(Filters.text, incorrect_address)],
+            VERIFY_ADDRESS: [MessageHandler(Filters.regex('^(Correct)$'), success_stored),
+                             MessageHandler(Filters.regex('^(Resend)$'), resend_address)],
+        },
+        fallbacks=[CommandHandler('cancel', cancel)],
+    )
+    dp.add_handler(conv_handler)
+    updater.job_queue.run_repeating(alerts, 30, name='polling_blockchain')
+    updater.start_polling()
+    updater.idle()
 
 
 if __name__ == '__main__':
-	main()
+    main()

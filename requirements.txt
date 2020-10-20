@@ -10,6 +10,8 @@ decorator==4.4.2
 gql==3.0.0a2
 graphql-core==3.1.2
 idna==2.10
+importlib-metadata==2.0.0
+jsonpickle==1.4.1
 multidict==4.7.6
 pony==0.7.13
 promise==2.3
@@ -24,3 +26,4 @@ tzlocal==2.1
 urllib3==1.25.10
 websockets==8.1
 yarl==1.6.2
+zipp==3.3.1

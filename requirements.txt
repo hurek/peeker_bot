@@ -13,6 +13,7 @@ idna==2.10
 importlib-metadata==2.0.0
 jsonpickle==1.4.1
 multidict==4.7.6
+polog==0.0.6
 pony==0.7.13
 promise==2.3
 pycparser==2.20
@@ -23,6 +24,7 @@ Rx==1.6.1
 six==1.15.0
 tornado==6.0.4
 tzlocal==2.1
+ujson==3.0.0
 urllib3==1.25.10
 websockets==8.1
 yarl==1.6.2

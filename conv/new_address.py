@@ -10,12 +10,12 @@ import time
 @db_session
 def store_address(update, context):  # TODO add buttons
     splitted = update.message.text.split(' ')
-    if not check_operator(splitted[0]):
+    if not check_operator(splitted[0].lower()):
         update.message.reply_text("Oops, I didn't find an operator with this address")
         time.sleep(1)
         return cancel(update, context)
-    if not (p := Address.get(operator=splitted[0])):
-        p = Address(operator=splitted[0])
+    if not (p := Address.get(operator=splitted[0].lower())):
+        p = Address(operator=splitted[0].lower())
     user = User.get(telegram_id=update.message.from_user.id)
     if (ex_name := Label.get(user=user, address=p)):
         if len(splitted) == 1:

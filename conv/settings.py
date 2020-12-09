@@ -7,8 +7,6 @@ def settings(update, context):
 
 
 def back_to_settings(update, context):
-    print(update.message.text)
-    print('BACK TO SETTINGS')
     update.callback_query.edit_message_text('Settings',
                                             inline_message_id=update.callback_query.inline_message_id,
                                             reply_markup=settings_inline_kb)
@@ -31,6 +29,7 @@ def language_set(update, context):
 
 def donate(update, context):
     img = open('donation/donation_qr.png', 'rb')
-    text = '🎁 Your donations help us understand that we are moving in the right direction and making a really cool service!\nOur ETH address is' + f'''<a href="https://etherscan.io/address/0xf592eE0E3a20Ddd65882E0fE6bFBB4B465A98Ae4">0xf592eE0E3a20Ddd65882E0fE6bFBB4B465A98Ae4</a>'''
+    text = '🎁 Your donations help us understand that we are moving in the right direction and making a really cool service!\nOur ETH address is' + \
+           f'''<a href="https://etherscan.io/address/0xf592eE0E3a20Ddd65882E0fE6bFBB4B465A98Ae4">0xf592eE0E3a20Ddd65882E0fE6bFBB4B465A98Ae4</a>'''
     update.callback_query.message.reply_photo(photo=img, caption=text, parse_mode='html')
     return

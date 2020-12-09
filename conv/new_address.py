@@ -2,7 +2,7 @@ from telegram.ext import MessageHandler, Filters, CommandHandler
 
 from conv.conv_utils import *
 from db_tools import *
-from conv.random_aaa import unique_label
+from conv.short_name import unique_label
 from notifications.subgraph_utils import *
 import time
 
@@ -48,7 +48,8 @@ def incorrect_address(update, context):
     return STORE_ADDRESS
 
 
-new_address_handler = ConversationHandler(  # TODO May be move it to handlers.py for importing
+# TODO move to handlers.py
+new_address_handler = ConversationHandler(
     entry_points=[MessageHandler(Filters.regex('^(📝New Address)$'), add_address)],
     states={
         STORE_ADDRESS: [MessageHandler(Filters.regex('^(0x[a-fA-F0-9]{40})'), store_address),

@@ -14,13 +14,11 @@ def my_addresses(update, context):
     if not user.labels:
         update.message.reply_text("You don't have any saved addresses yet. Click <b>New Address</b> to add your first "
                                   "address.", parse_mode='html')
-    addresses = []
     for label in user.labels:
         link = f'''<a href="https://allthekeeps.com/operator/{label.address.operator}">{label.address.operator}</a>'''
         msg = f'''<b>{label.label}</b>\n{link}\n'''
         result = jsonpickle.decode(node_stats(label.address.operator))
         stats = node_stats_parser(result)
-        # subscriptions = subscriptions_info(user, label.address)
         update.message.reply_text(msg + stats + '\n', reply_markup=first_operator_inline_kb, parse_mode='html')
         commit()
     return
@@ -57,17 +55,6 @@ def inline_back(update, context):
 def inline_close(update, context):
     update.callback_query.message.delete()
     return
-
-
-def subscriptions_info(user, address):
-    events = subscribe_event_dict()
-    subscriptions = f'''<b>Event notifications:</b>\n'''
-    for value in events.values():
-        if not Tracking.get(user=user, operator=address, type=value['type']):
-            subscriptions += value['text'] + '🔕OFF' + '\n'
-        else:
-            subscriptions += value['text'] + '🔔ON' + '\n'
-    return subscriptions
 
 
 @db_session
@@ -114,7 +101,7 @@ def delete_user_address(update, context):
     label = Label.get(user=user, address=address)
     name = label.label
     label.delete()
-    if (trackings := select(t for t in Tracking if (t.operator == address and t.user == user))):
+    if trackings := select(t for t in Tracking if (t.operator == address and t.user == user)):
         for i in trackings:
             i.delete()
     commit()
@@ -143,6 +130,7 @@ def subscribe_event(update, context):
     return
 
 
+# TODO move to handlers.py
 rename_operator_handler = ConversationHandler(
     entry_points=[CallbackQueryHandler(rename_operator_address, pattern='^' + str(RENAME) + '$')],
     states={

@@ -13,9 +13,11 @@ def send_feedback(update, context):
     feedback = '<b>#FEEDBACK</b>\n' + update.message.text + '\n' + f'''FROM {update.message.from_user.id}'''
     if (username := update.message.from_user.username):
         feedback += f''' @{username}'''
+
+    # TODO SEND TO GOOGLE SHEETS
     context.bot.send_message(text=feedback, chat_id=274980096, parse_mode='HTML')
     update.message.reply_text('Your feedback succesfully added!', reply_markup=main_kb)
-    return ConversationHandler.END #TODO SEND TO GOOGLE SHEETS
+    return ConversationHandler.END
 
 
 feedback_handler = ConversationHandler(

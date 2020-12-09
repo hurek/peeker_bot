@@ -62,6 +62,10 @@ def main():
     dp.add_handler(CallbackQueryHandler(language_set, pattern='^' + str(LANGUAGE) + '$'))
     dp.add_handler(CallbackQueryHandler(donate, pattern='^' + str(DONATIONS) + '$'))
 
+    # This is where tasks are added to the scheduler.
+    # The scheduler is built into the telegram library. When I set the same job repeat time, only one job works.
+    # This is the minimum viable version, but I will optimize it soon:
+    # TODO Create one global job
     updater.job_queue.run_repeating(event_manager, 88, context=EventTypes.CREATEDEVENT, name='createdEvents polling')
     updater.job_queue.run_repeating(event_manager, 92, context=EventTypes.REDEEMEDEVENT, name='redeemedEvents polling')
     updater.job_queue.run_repeating(event_manager, 97, context=EventTypes.FUNDEDEVENT, name='fundedEvents polling')

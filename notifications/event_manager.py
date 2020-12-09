@@ -18,9 +18,7 @@ event_queries = {
     EventTypes.REDEMPTIONFEEINCREASED: 'redemptionFeeIncreasedEvents'
 }
 
-
-def get_time_from_db(event_type):
-    entities = {
+entities = {
         EventTypes.CREATEDEVENT: CreatedEventTiming,
         EventTypes.REDEEMEDEVENT: RedeemedEventTiming,
         EventTypes.FUNDEDEVENT: FundedEventTiming,
@@ -32,7 +30,24 @@ def get_time_from_db(event_type):
         EventTypes.PUBKEYREGISTERED: PubkeyRegisteredTiming,
         EventTypes.COURTESYCALLED: CourtesyCalledTiming,
         EventTypes.REDEMPTIONFEEINCREASED: RedemptionFeeIncreasedTiming
-    }
+}
+
+replace_dict = {
+        EventTypes.CREATEDEVENT: 'deposit',
+        EventTypes.REDEEMEDEVENT: 'deposits',
+        EventTypes.FUNDEDEVENT: 'deposits',
+        EventTypes.SETUPFAILED: 'deposits',
+        EventTypes.LIQUIDATED: 'deposits',
+        EventTypes.STARTEDLIQUIDATION: 'Liquidation',
+        EventTypes.REDEMPTIONREQUESTED: 'Redemption',
+        EventTypes.GOTREDEMPTIONSIGNATURE: 'Redemption Signature',
+        EventTypes.PUBKEYREGISTERED: 'registered',
+        EventTypes.COURTESYCALLED: 'created',
+        EventTypes.REDEMPTIONFEEINCREASED: 'increased'
+}
+
+
+def get_time_from_db(event_type):
     if not select(date for date in entities[event_type]).order_by(lambda date: desc(date.id)).first():
         date = entities[event_type](alerts=int(datetime.timestamp(datetime.now())))
     else:
@@ -44,7 +59,7 @@ def get_time_from_db(event_type):
 
 def event_query(timestamp, event_type):
     query_pattern = """
-		query GetLatestFundedEvents($timestamp:  BigInt!) {""" + \
+		query GetLatestEvents($timestamp:  BigInt!) {""" + \
                     f"""{event_type}""" + \
                     """(where:{timestamp_gt: $timestamp}) {
       id
@@ -84,25 +99,12 @@ def events_parser(blockchain_data, event_type):
             result.append(event_data)
         return result
     except:
-        print('ERROR IN CREATED EVENTS')  # TODO how to handle error?
+        # TODO exception handle
         return
 
 
 def return_msg(event_type, link, label, address):
     operator_link = f'''<a href="https://allthekeeps.com/operator/{address}">{label}</a>'''
-    replace_dict = {
-        EventTypes.CREATEDEVENT: 'deposit',
-        EventTypes.REDEEMEDEVENT: 'deposits',
-        EventTypes.FUNDEDEVENT: 'deposits',
-        EventTypes.SETUPFAILED: 'deposits',
-        EventTypes.LIQUIDATED: 'deposits',
-        EventTypes.STARTEDLIQUIDATION: 'Liquidation',
-        EventTypes.REDEMPTIONREQUESTED: 'Redemption',
-        EventTypes.GOTREDEMPTIONSIGNATURE: 'Redemption Signature',
-        EventTypes.PUBKEYREGISTERED: 'registered',
-        EventTypes.COURTESYCALLED: 'created',
-        EventTypes.REDEMPTIONFEEINCREASED: 'increased'
-    }
     event_link = f'''<a href="{link}">{replace_dict[event_type]}</a>'''
     message_samples = {
         EventTypes.CREATEDEVENT: f'''🔸New Deposit🔸\nYour operator {operator_link} got selected for a new {event_link}.\n\n#created #{label.replace(' ', '_')}''',
@@ -124,7 +126,6 @@ def event_manager(context):
     job = context.job
     event_type = job.context
     timestamp = get_time_from_db(event_type)
-    print(event_type)
     try:
         blockchain_data = jsonpickle.decode(event_query(timestamp, event_queries[event_type]))
         if not (events_data := events_parser(blockchain_data, event_queries[event_type])):

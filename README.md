@@ -17,3 +17,6 @@ PEEKER bot already supports 11 types of notifications:
 * Redemption Fee Increased
 
 New features will be added very soon.
+
+**Contacts**
+Discord: rdfbbx#6437

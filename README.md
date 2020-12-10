@@ -3,6 +3,10 @@
 **PEEKER bot** is a system for monitoring nodes implemented in telegram bot. It allows operator owners to monitor the functioning of their nodes and receive timely notifications of problems.
 The bot is currently in beta testing and will be optimized and improved in future versions.
 
+**Start using PEEKER**
+
+https://t.me/keep_peeker_bot
+
 **Features**
 * Adding multiple operators for monitoring
 * Ability to add custom names for operators

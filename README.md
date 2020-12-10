@@ -8,8 +8,9 @@ The bot is currently in beta testing and will be optimized and improved in futur
 * Ability to add custom names for operators
 * Summary for each operator (bonded and available to bond, number of faults, staked KEEP amount and tBTC rewards)
 * Each operator has its own set of enabled notification types, which allows for flexible configuration
+* Each notification contains the name of your operator with an embedded link to allthekeeps.com, as well as a link to the Deposit.
 
-**Available notification types:**
+**Available notification types**
 * New Deposit
 * Deposit Redeemed
 * Deposit Funded
@@ -26,4 +27,5 @@ New types of notifications will be added in the near future, as well as the menu
 The Redeem buttons will also be added to critical notifications.
 
 **Contacts**
+
 Discord: rdfbbx#6437

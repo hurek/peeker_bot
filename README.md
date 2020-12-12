@@ -12,7 +12,8 @@ https://t.me/keep_peeker_bot
 * Ability to add custom names for operators
 * Summary for each operator (bonded and available to bond, number of faults, staked KEEP amount and tBTC rewards)
 * Each operator has its own set of enabled notification types, which allows for flexible configuration
-* Each notification contains the name of your operator with an embedded link to allthekeeps.com, as well as a link to the Deposit.
+* Each notification contains the name of your operator with an embedded link to allthekeeps.com, as well as a link to the Deposit
+* Critical notifications such as Courtesy Call and Collateralization Decreased have a built-in Redeem button
 
 **Available notification types**
 * New Deposit
@@ -24,6 +25,7 @@ https://t.me/keep_peeker_bot
 * Redemption Started
 * Redemption Signature
 * Public Key Registered
+* Collateralization Decreased (below 130%)
 * Courtesy Call
 * Redemption Fee Increased
 

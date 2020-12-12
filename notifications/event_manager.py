@@ -197,7 +197,7 @@ def collateralization(context):
             return
         for deposit in deposits:
             lotValueWei = int(deposit["lotSizeSatoshis"]) * wei_per_sat
-            if (ratio := round(int(deposit["bondedECDSAKeep"]["totalBondAmount"]) / lotValueWei * 100, 2)) < 150:
+            if (ratio := round(int(deposit["bondedECDSAKeep"]["totalBondAmount"]) / lotValueWei * 100, 2)) < 130:
                 operators = deposit["bondedECDSAKeep"]["members"]
                 redeem_inline_keyboard = [[InlineKeyboardButton("Redeem", url=f"""https://dapp.tbtc.network/deposit/{deposit["id"].replace('dp-', '')}/redeem""")]]
                 redeem_inline_kb = InlineKeyboardMarkup(redeem_inline_keyboard)

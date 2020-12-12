@@ -7,7 +7,8 @@ REDEEMED, EXPLORER, LANGUAGE, \
 DONATIONS, FUNDED, BACK, \
 SETUPFAILED, LIQUIDATED, STARTEDLIQUIDATION, \
 REDEMPTIONREQUESTED, GOTREDEMPTIONSIGNATURE, \
-PUBKEYREGISTERED, COURTESYCALLED, REDEMPTIONFEEINCREASED = range(20)
+PUBKEYREGISTERED, COURTESYCALLED, REDEMPTIONFEEINCREASED,\
+CRATIODECREASED = range(21)
 
 main_keyboard = [['📝New Address', '📖My Addresses'],
                  ['📨Feedback', '⚙️Settings']]
@@ -26,6 +27,7 @@ keyboard_dict = {
     str(REDEMPTIONREQUESTED): {'value': EventTypes.REDEMPTIONREQUESTED.value, 'name': 'Redemption Requested'},
     str(GOTREDEMPTIONSIGNATURE): {'value': EventTypes.GOTREDEMPTIONSIGNATURE.value, 'name': 'Redemption Signature'},
     str(PUBKEYREGISTERED): {'value': EventTypes.PUBKEYREGISTERED.value, 'name': 'Pubkey Registered'},
+    str(CRATIODECREASED): {'value': EventTypes.CRATIODECREASED.value, 'name': 'Collateralization < 130%'},
     str(COURTESYCALLED): {'value': EventTypes.COURTESYCALLED.value, 'name': 'Courtesy Call'},
     str(REDEMPTIONFEEINCREASED): {'value': EventTypes.REDEMPTIONFEEINCREASED.value, 'name': 'Redemption Fee Increased'}
 }

@@ -64,6 +64,10 @@ def subscribe_event_dict():
             'text': 'Pubkey Registered: '
         }
         ,
+        str(CRATIODECREASED): {
+            'type': EventTypes.CRATIODECREASED.value,
+            'text': "Collateralization < 130%"
+        },
         str(COURTESYCALLED): {
             'type': EventTypes.COURTESYCALLED.value,
             'text': 'Courtesy Call: '

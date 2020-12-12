@@ -52,6 +52,7 @@ def main():
     dp.add_handler(CallbackQueryHandler(subscribe_event, pattern='^' + str(REDEMPTIONREQUESTED) + '$'))
     dp.add_handler(CallbackQueryHandler(subscribe_event, pattern='^' + str(GOTREDEMPTIONSIGNATURE) + '$'))
     dp.add_handler(CallbackQueryHandler(subscribe_event, pattern='^' + str(PUBKEYREGISTERED) + '$'))
+    dp.add_handler(CallbackQueryHandler(subscribe_event, pattern='^' + str(CRATIODECREASED) + '$'))
     dp.add_handler(CallbackQueryHandler(subscribe_event, pattern='^' + str(COURTESYCALLED) + '$'))
     dp.add_handler(CallbackQueryHandler(subscribe_event, pattern='^' + str(REDEMPTIONFEEINCREASED) + '$'))
     dp.add_handler(CallbackQueryHandler(delete_user_address, pattern='^' + str(DELETE) + '$'))

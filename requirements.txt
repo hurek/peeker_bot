@@ -16,6 +16,7 @@ multidict==5.1.0
 polog==0.0.9
 pony==0.7.14
 promise==2.3
+pycoingecko==1.4.0
 pycparser==2.20
 python-telegram-bot==13.1
 pytz==2020.4
@@ -23,6 +24,7 @@ requests==2.25.0
 Rx==3.1.1
 six==1.15.0
 tornado==6.1
+typing-extensions==3.7.4.3
 tzlocal==2.1
 ujson==4.0.1
 urllib3==1.26.2

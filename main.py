@@ -77,6 +77,7 @@ def main():
     updater.job_queue.run_repeating(event_manager, 131, context=EventTypes.PUBKEYREGISTERED, name='pubkey polling')
     updater.job_queue.run_repeating(event_manager, 137, context=EventTypes.COURTESYCALLED, name='Courtesycalled polling')
     updater.job_queue.run_repeating(event_manager, 142, context=EventTypes.REDEMPTIONREQUESTED, name='Redemptionfee_increased polling')
+    updater.job_queue.run_repeating(collateralization, 600, name='collateralization_decreased polling')
     updater.start_polling()
     updater.idle()
 

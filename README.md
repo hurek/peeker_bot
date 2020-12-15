@@ -16,6 +16,7 @@ https://t.me/keep_peeker_bot
 * Critical notifications such as Courtesy Call and Collateralization Decreased have a built-in Redeem button
 
 **Available notification types**
+* Node Disconnected [beta]
 * New Deposit
 * Deposit Redeemed
 * Deposit Funded

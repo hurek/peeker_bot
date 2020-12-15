@@ -1,15 +1,17 @@
-from telegram.ext import CallbackQueryHandler, MessageHandler, CommandHandler, Filters
-
-from conv.conv_utils import *
-from db_tools import *
-from notifications.subgraph_utils import *
+"""Here are the functions for the my Addresses conversation."""
 import jsonpickle
-from conv.keyboards import *
 import re
+from pony.orm import db_session, commit, select
+from telegram.ext import CallbackQueryHandler, MessageHandler, CommandHandler, Filters
+from conversations.conv_utils import *
+from configs.db_tools import *
+from notifications.subgraph_utils import *
+from conversations.keyboards import *
 
 
 @db_session
 def my_addresses(update, context):
+    """A function that sends a list of all operators added by the user."""
     user = User.get(telegram_id=update.message.from_user.id)
     if not user.labels:
         update.message.reply_text("You don't have any saved addresses yet. Click <b>New Address</b> to add your first "
@@ -26,6 +28,7 @@ def my_addresses(update, context):
 
 @db_session
 def inline_configure(update, context):
+    """Function for changing the Inline Keyboard when you click the Notifications button."""
     msg = update.callback_query.message.text_html
     operator = re.search('(0x[a-fA-F0-9]{40})', msg).group(0)
     user = User.get(telegram_id=update.callback_query.from_user.id)
@@ -36,6 +39,7 @@ def inline_configure(update, context):
 
 
 def change_inline_kb(user, address):
+    """Function for changing the notification status on the Inline Keyboard when a button is pressed."""
     buttons = []
     for key, value in keyboard_dict.items():
         if not Tracking.get(user=user, operator=address, type=value['value']):
@@ -48,17 +52,20 @@ def change_inline_kb(user, address):
 
 
 def inline_back(update, context):
+    """Function for the Back button that returns the previous keyboard."""
     update.callback_query.edit_message_reply_markup(reply_markup=first_operator_inline_kb, inline_message_id=update.callback_query.inline_message_id)
     return
 
 
 def inline_close(update, context):
+    """Function for the Close button that closes (deletes) the message."""
     update.callback_query.message.delete()
     return
 
 
 @db_session
 def rename_operator_address(update, context):
+    """""" #TODO add docstring
     context.user_data.clear()
     user = User.get(telegram_id=update.callback_query.from_user.id)
     msg = update.callback_query.message.text_html

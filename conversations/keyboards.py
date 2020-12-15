@@ -1,5 +1,6 @@
+"""Here you can create bot keyboards for various conversations."""
 from telegram import ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
-from notifications.types import EventTypes
+from notifications.event_types import EventTypes
 
 DELETE, CONFIGURE, CLOSE, \
 RENAME, NEW_NAME, CREATED, \
@@ -7,7 +8,7 @@ REDEEMED, EXPLORER, LANGUAGE, \
 DONATIONS, FUNDED, BACK, \
 SETUPFAILED, LIQUIDATED, STARTEDLIQUIDATION, \
 REDEMPTIONREQUESTED, GOTREDEMPTIONSIGNATURE, \
-PUBKEYREGISTERED, COURTESYCALLED, REDEMPTIONFEEINCREASED,\
+PUBKEYREGISTERED, COURTESYCALLED, REDEMPTIONFEEINCREASED, \
 CRATIODECREASED = range(21)
 
 main_keyboard = [['📝New Address', '📖My Addresses'],

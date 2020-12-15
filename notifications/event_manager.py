@@ -1,11 +1,14 @@
+"""Here you can find all the logic of requests to the subgraph, parsing responses, searching for event participants
+and sending them notificationss."""
+from pony.orm import select, commit, desc, db_session
 from pycoingecko import CoinGeckoAPI
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-from notifications.types import *
+from notifications.event_types import *
 from notifications.subgraph_utils import *
 import jsonpickle
 import json
-from db_tools import *
+from configs.db_tools import *
 
 event_queries = {
     EventTypes.CREATEDEVENT: 'createdEvents',

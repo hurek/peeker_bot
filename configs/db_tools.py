@@ -1,8 +1,10 @@
-from pony.orm import *
-from datetime import *
+"""Here we create a relationship with the database and declare entity classes from which PonyORM will create tables
+in the database."""
+from pony.orm import Database, Required, Optional, Set
+from datetime import datetime
 
 
-db = Database('sqlite', 'test.sqlite', create_db=True)
+db = Database('sqlite', '../test.sqlite', create_db=True)
 
 
 class CreatedEventTiming(db.Entity):
@@ -73,3 +75,7 @@ class Tracking(db.Entity):
     operator = Required("Address")
     user = Required("User")
     type = Required(int)
+
+
+# Generate mapping and if tables not exists - create them
+db.generate_mapping(create_tables=True)

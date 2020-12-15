@@ -1,4 +1,5 @@
-from conv.keyboards import settings_inline_kb, explorers_inline_kb, back_to_settings_inline_kb
+"""Functions for the settings conversation."""
+from conversations.keyboards import settings_inline_kb, explorers_inline_kb, back_to_settings_inline_kb
 
 
 def settings(update, context):

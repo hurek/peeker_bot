@@ -2,4 +2,5 @@
 /.idea/
 logs.db
 test.sqlite
-config.py
+configs/config.py
+/notifications/diagnostics.json

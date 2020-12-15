@@ -1,3 +1,4 @@
+"""Here you can find auxiliary functions for adding operator dialogs and collecting statistics for the operator."""
 from gql import gql, Client, AIOHTTPTransport
 import json
 import locale

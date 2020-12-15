@@ -1,17 +1,18 @@
+"""Here are the functions and ConversationHandler for feedback conversation."""
 from telegram.ext import MessageHandler, Filters, CommandHandler
-
-from conv.conv_utils import *
+from conversations.conv_utils import WAIT_FEEDBACK, CHAT_TIMEOUT, ConversationHandler, back_kb, main_kb, cancel, chat_timeout
 
 
 def feedback(update, context):
+    """Function for sending a message with a suggestion to send feedback."""
     update.message.reply_text('Write your feedback:', reply_markup=back_kb)
     return WAIT_FEEDBACK
 
 
 def send_feedback(update, context):
-
+    """Function for processing feedback."""
     feedback = '<b>#FEEDBACK</b>\n' + update.message.text + '\n' + f'''FROM {update.message.from_user.id}'''
-    if (username := update.message.from_user.username):
+    if username := update.message.from_user.username:
         feedback += f''' @{username}'''
 
     # TODO SEND TO GOOGLE SHEETS

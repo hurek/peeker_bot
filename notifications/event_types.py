@@ -1,3 +1,4 @@
+"""The EventType class is declared here, which contains notification types"""
 from enum import Enum
 
 
@@ -14,3 +15,4 @@ class EventTypes(Enum):
     COURTESYCALLED = 10
     REDEMPTIONFEEINCREASED = 11
     CRATIODECREASED = 12
+    NODESTATUS = 13

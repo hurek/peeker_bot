@@ -1,3 +1,5 @@
+"""Here, the MQBot class is declared, which includes a wrapper over the standard send_message. The bot creates a
+queue of messages and we can set limits on messages per second. This allows you not to violate the telegram limits."""
 import telegram.bot
 from telegram.ext import messagequeue as mq
 

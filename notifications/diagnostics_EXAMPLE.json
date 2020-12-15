@@ -1,0 +1,6 @@
+[
+  {
+    "ecdsa": "http://NODERSERVERLINK:PORT/diagnostics",
+    "ethereum_address": "OPTIONAL - NOT USED ANYWHERE YET"
+  }
+]

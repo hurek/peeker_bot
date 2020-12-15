@@ -1,21 +1,23 @@
+"""The main script that runs it includes handlers, starts the scheduler, and starts the bot."""
 import logging
+
 from telegram.ext import Updater
-from config import TOKEN
 from telegram.utils.request import Request
-from conv.my_adresses import *
-from conv.new_address import *
-from conv.feedback import *
-from conv.settings import *
 from polog.flog import flog
-from notifications.MQbot import *
+from configs.config import TOKEN
+from conversations.my_adresses import *
+from conversations.new_address import *
+from conversations.feedback import *
+from conversations.settings import *
+from notifications.MQbot import MQBot, mq
 from notifications.event_manager import *
 
+
 # Logger settings
+from notifications.node_status import check_status
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# Generate mapping and if tables not exists - create them
-db.generate_mapping(create_tables=True)
 
 
 @db_session
@@ -23,12 +25,18 @@ def start(update, context):
     if not (p := User.get(telegram_id=update.message.chat_id)):
         p = User(telegram_id=update.message.from_user.id, username=update.message.from_user.username)
         commit()
-    update.message.reply_text(text='Hello 👋 I am a beta release of Peeker bot. For this reason if you have any suggestions or ideas you may contact to my creator👨‍💻.\n\nMy specific feature is delicate adjustment ⚙️ of notifications for every operator address. I already know how to send several types of notifications, but in the very near future I will learn how to do a lot more!',
+    update.message.reply_text(text='Hello 👋 I am a beta release of Peeker bot. For this reason if you have any '
+                                   'suggestions or ideas you may contact to my creator👨‍💻.\n\nMy specific feature '
+                                   'is delicate adjustment ⚙️ of notificationss for every operator address. I already '
+                                   'know how to send several types of notificationss, but in the very near future I '
+                                   'will learn how to do a lot more!',
                               reply_markup=main_kb)
 
 
 @flog
+@db_session
 def main():
+
     q = mq.MessageQueue(all_burst_limit=20, all_time_limit_ms=1500)
     request = Request(con_pool_size=8)
     peeker_bot = MQBot(TOKEN, request=request, mqueue=q)
@@ -79,6 +87,7 @@ def main():
     updater.job_queue.run_repeating(event_manager, 137, context=EventTypes.COURTESYCALLED, name='Courtesycalled polling')
     updater.job_queue.run_repeating(event_manager, 142, context=EventTypes.REDEMPTIONREQUESTED, name='Redemptionfee_increased polling')
     updater.job_queue.run_repeating(collateralization, 600, name='collateralization_decreased polling')
+    updater.job_queue.run_repeating(check_status, 303, name='node status polling')
     updater.start_polling()
     updater.idle()
 

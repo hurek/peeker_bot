@@ -9,7 +9,7 @@ DONATIONS, FUNDED, BACK, \
 SETUPFAILED, LIQUIDATED, STARTEDLIQUIDATION, \
 REDEMPTIONREQUESTED, GOTREDEMPTIONSIGNATURE, \
 PUBKEYREGISTERED, COURTESYCALLED, REDEMPTIONFEEINCREASED, \
-CRATIODECREASED = range(21)
+CRATIODECREASED, NODESTATUS = range(22)
 
 main_keyboard = [['📝New Address', '📖My Addresses'],
                  ['📨Feedback', '⚙️Settings']]
@@ -19,6 +19,7 @@ back_keyboard = [['⬅️Back']]
 back_kb = ReplyKeyboardMarkup(back_keyboard, resize_keyboard=True)
 
 keyboard_dict = {
+    str(NODESTATUS): {'value': EventTypes.NODESTATUS.value, 'name': 'Node Status [Beta]'},
     str(CREATED): {'value': EventTypes.CREATEDEVENT.value, 'name': 'New Deposit'},
     str(REDEEMED): {'value': EventTypes.REDEEMEDEVENT.value, 'name': 'Deposit Redeemed'},
     str(FUNDED): {'value': EventTypes.FUNDEDEVENT.value, 'name': 'Deposit Funded'},

@@ -31,6 +31,7 @@ def chat_timeout(update, context):
 def subscribe_event_dict():
     """A function that returns a dictionary with notification types and their values."""
     dictionary = {
+        str(NODESTATUS): {'type': EventTypes.NODESTATUS.value},
         str(CREATED): {'type': EventTypes.CREATEDEVENT.value},
         str(REDEEMED): {'type': EventTypes.REDEEMEDEVENT.value},
         str(FUNDED): {'type': EventTypes.FUNDEDEVENT.value},

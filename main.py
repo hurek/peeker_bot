@@ -36,7 +36,6 @@ def start(update, context):
 @flog
 @db_session
 def main():
-
     q = mq.MessageQueue(all_burst_limit=20, all_time_limit_ms=1500)
     request = Request(con_pool_size=8)
     peeker_bot = MQBot(TOKEN, request=request, mqueue=q)
@@ -51,18 +50,12 @@ def main():
     dp.add_handler(CallbackQueryHandler(inline_close, pattern='^' + str(CLOSE) + '$'))
     dp.add_handler(CallbackQueryHandler(inline_back, pattern='^' + str(BACK) + '$'))
 
-    dp.add_handler(CallbackQueryHandler(subscribe_event, pattern='^' + str(CREATED) + '$'))
-    dp.add_handler(CallbackQueryHandler(subscribe_event, pattern='^' + str(REDEEMED) + '$'))
-    dp.add_handler(CallbackQueryHandler(subscribe_event, pattern='^' + str(FUNDED) + '$'))
-    dp.add_handler(CallbackQueryHandler(subscribe_event, pattern='^' + str(SETUPFAILED) + '$'))
-    dp.add_handler(CallbackQueryHandler(subscribe_event, pattern='^' + str(LIQUIDATED) + '$'))
-    dp.add_handler(CallbackQueryHandler(subscribe_event, pattern='^' + str(STARTEDLIQUIDATION) + '$'))
-    dp.add_handler(CallbackQueryHandler(subscribe_event, pattern='^' + str(REDEMPTIONREQUESTED) + '$'))
-    dp.add_handler(CallbackQueryHandler(subscribe_event, pattern='^' + str(GOTREDEMPTIONSIGNATURE) + '$'))
-    dp.add_handler(CallbackQueryHandler(subscribe_event, pattern='^' + str(PUBKEYREGISTERED) + '$'))
-    dp.add_handler(CallbackQueryHandler(subscribe_event, pattern='^' + str(CRATIODECREASED) + '$'))
-    dp.add_handler(CallbackQueryHandler(subscribe_event, pattern='^' + str(COURTESYCALLED) + '$'))
-    dp.add_handler(CallbackQueryHandler(subscribe_event, pattern='^' + str(REDEMPTIONFEEINCREASED) + '$'))
+
+    event_dict = subscribe_event_dict()
+    for key in event_dict.keys():
+        pattern = '^' + key + '$'
+        dp.add_handler(CallbackQueryHandler(subscribe_event, pattern=pattern))
+
     dp.add_handler(CallbackQueryHandler(delete_user_address, pattern='^' + str(DELETE) + '$'))
     dp.add_handler(rename_operator_handler)
 

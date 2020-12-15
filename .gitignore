@@ -4,3 +4,4 @@ logs.db
 test.sqlite
 configs/config.py
 /notifications/diagnostics.json
+/configs/admins.json

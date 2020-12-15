@@ -5,6 +5,7 @@ from telegram.ext import Updater
 from telegram.utils.request import Request
 from polog.flog import flog
 from configs.config import TOKEN
+from conversations.announce import announce_handler
 from conversations.my_adresses import *
 from conversations.new_address import *
 from conversations.feedback import *
@@ -42,6 +43,7 @@ def main():
     updater = Updater(bot=peeker_bot, use_context=True)
     dp = updater.dispatcher
     dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(announce_handler)
     dp.add_handler(new_address_handler)
     dp.add_handler(feedback_handler)
 

@@ -9,7 +9,7 @@ client = Client(transport=transport, fetch_schema_from_transport=True)
 
 
 def node_stats(operator_id):
-    """Send node stats when the command /stats is issued."""
+    """Function for querying subgraph for operator's stats."""
     query = gql(
         """
         query GetOperators($id: ID!) {
@@ -37,11 +37,13 @@ def node_stats(operator_id):
 
 
 def satoshi_to_tbtc(tbtc):
+    """Function for converting satoshis to tBTC"""
     return round(tbtc * 0.000000000000000001, 5)
 
 
 def check_operator(operator_id):
-    """Send node stats when the command /stats is issued."""
+    """Function for querying an operator on a subgraph by its ID. If operator_id not in result, then this ETH address
+    not an operator. """
     query = gql(
         """
         query GetOperators($id: ID!) {
@@ -63,6 +65,7 @@ def check_operator(operator_id):
 
 
 def node_stats_parser(result):
+    """Function for parsing result of node_stats function and sending structured messages with stats."""
     locale.setlocale(locale.LC_ALL, 'en_US.utf8')
     msg = ""
     bonded = "▫️Bonded: "

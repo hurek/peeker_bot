@@ -65,7 +65,8 @@ def inline_close(update, context):
 
 @db_session
 def rename_operator_address(update, context):
-    """""" #TODO add docstring
+    """Function to prompt the user to enter a new name for the operator. This puts the conversation in a state of
+    waiting for a new name from the user. """
     context.user_data.clear()
     user = User.get(telegram_id=update.callback_query.from_user.id)
     msg = update.callback_query.message.text_html
@@ -80,6 +81,7 @@ def rename_operator_address(update, context):
 
 @db_session
 def new_operator_name(update, context):
+    """Function for saving a new name to the database. If successful, then the conversation ends."""
     address = Address.get(operator=context.user_data['address'])
     user = User.get(telegram_id=update.message.from_user.id)
     new_name = update.message.text
@@ -95,12 +97,14 @@ def new_operator_name(update, context):
 
 
 def incorrect_name(update, context):
+    """Function called by the handler when the name format is incorrect."""
     update.message.reply_text('Invalid name. Please enter 1-40 symbols length name.')
     return NEW_NAME
 
 
 @db_session
 def delete_user_address(update, context):
+    """A function to remove an operator from the list tracked by this user."""
     user = User.get(telegram_id=update.callback_query.from_user.id)
     msg = update.callback_query.message.text_html
     operator = re.search('(0x[a-fA-F0-9]{40})', msg).group(0)
@@ -120,6 +124,7 @@ def delete_user_address(update, context):
 
 @db_session
 def subscribe_event(update, context):
+    """Universal function for subscribing to a specific type of notification."""
     events = subscribe_event_dict()
     current_event = events[update.callback_query.data]
     msg = update.callback_query.message.text_html

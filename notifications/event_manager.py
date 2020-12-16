@@ -55,6 +55,8 @@ replace_dict = {
 
 
 def return_msg(event_type, link, label, address, cratio=None):
+    """Universal function that creates a message for notification. The message contains a link to the operator and a
+    link to the deposit on the site allthekeeps.com. """
     operator_link = f'''<a href="https://allthekeeps.com/operator/{address}">{label}</a>'''
     event_link = f'''<a href="{link}">{replace_dict[event_type]}</a>'''
     message_samples = {
@@ -75,6 +77,7 @@ def return_msg(event_type, link, label, address, cratio=None):
 
 
 def get_time_from_db(event_type):
+    """Universal function for getting the last check timestamp from the database."""
     if not (date := select(date for date in entities[event_type]).order_by(lambda date: desc(date.id)).first()):
         date = entities[event_type](alerts=int(datetime.timestamp(datetime.now())))
         commit()
@@ -82,12 +85,14 @@ def get_time_from_db(event_type):
 
 
 def put_time_to_db(event_type):
+    """Universal function for putting the current timestamp to the database."""
     current = entities[event_type](alerts=int(datetime.timestamp(datetime.now())))
     commit()
     return
 
 
 def event_query(timestamp, event_type):
+    """Universal function for querying subgraph."""
     query_pattern = """
 		query GetLatestEvents($timestamp:  BigInt!) {""" + \
                     f"""{event_type}""" + \
@@ -114,6 +119,7 @@ def event_query(timestamp, event_type):
 
 
 def get_active_deposits():
+    """Function for querying subgraph for all active deposits."""
     skip = 0
     query = gql(
         """
@@ -142,6 +148,7 @@ def get_active_deposits():
 
 
 def events_parser(blockchain_data, event_type):
+    """Function for parsing result of Events queries."""
     result = []
     try:
         events = blockchain_data[event_type]
@@ -164,6 +171,7 @@ def events_parser(blockchain_data, event_type):
 
 @db_session
 def event_manager(context):
+    """Universal function for managing queries and Event notifications."""
     job = context.job
     event_type = job.context
     timestamp = get_time_from_db(event_type)
@@ -191,6 +199,7 @@ def event_manager(context):
 
 @db_session
 def collateralization(context):
+    """Function for managing queries and Collateralization notifications."""
     cg = CoinGeckoAPI()
     eth_btc_price = cg.get_price(ids='ethereum', vs_currencies='btc')["ethereum"]["btc"]
     sat_per_wei = eth_btc_price * 100000000 * 0.000000000000000001

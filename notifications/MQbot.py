@@ -6,12 +6,14 @@ from telegram.ext import messagequeue as mq
 
 class MQBot(telegram.bot.Bot):
     def __init__(self, *args, is_queued_def=True, mqueue=None, **kwargs):
+        """Init function for Message Queue Bot class"""
         super(MQBot, self).__init__(*args, **kwargs)
         # below 2 attributes should be provided for decorator usage
         self._is_messages_queued_default = is_queued_def
         self._msg_queue = mqueue or mq.MessageQueue()
 
     def __del__(self):
+        """Function for stopping message queue."""
         try:
             self._msg_queue.stop()
         except:
@@ -19,4 +21,5 @@ class MQBot(telegram.bot.Bot):
 
     @mq.queuedmessage
     def send_message(self, *args, **kwargs):
+        """Message sending function, with a wrapper for message queue. This allows you to not exceed the telegram limits."""
         return super(MQBot, self).send_message(*args, **kwargs)

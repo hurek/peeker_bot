@@ -35,7 +35,7 @@ def connected_to_peers(address, peer_lists, is_client=False):
         for i in lst:
             if address == i["ethereum_address"].lower():
                 total_matches += 1
-    if total_matches / total_diagnostic_nodes > 2:
+    if total_matches / total_diagnostic_nodes > 0.8:
         return True
     return False
 

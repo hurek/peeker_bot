@@ -12,15 +12,15 @@ def get_diagnostics_data():
     diagnostics = []
     sources_total = 0
     for source in diagnostic_sources:
-        response = requests.get(source['ecdsa']) #TODO Handle errors
+        response = requests.get(source['ecdsa'])  # TODO Handle errors
         diagnostics.append(jsonpickle.decode(response.text))
         sources_total += 1
     return diagnostics, sources_total
 
 
-def connected_to_peers(address, peer_lists):
+def connected_to_peers(address, peer_lists, is_client=False):
     total_diagnostic_nodes = len(peer_lists)
-    total_matches = 0
+    total_matches = 1 if is_client is True else 0
     for lst in peer_lists:
         for i in lst:
             if address == i["ethereum_address"].lower():
@@ -34,7 +34,7 @@ def connected_to_peers(address, peer_lists):
 def check_status(context):
     diagnostics, sources_total = get_diagnostics_data()
     addresses = select(p for p in Address)
-    all_clients = [param["client_info"]["ethereum_address"] for param in diagnostics]
+    all_clients = [param["client_info"]["ethereum_address"].lower() for param in diagnostics]
     peer_lists = [param["connected_peers"] for param in diagnostics]
     msg = "🆘<b>The node is disconnected!</b>🆘\nI didn't find your node {} among the list of connected peers. Most likely," \
           " your node is disconnected from the network - take measures to fix the problem.\n\n<i>This feature is " \
@@ -44,7 +44,9 @@ def check_status(context):
     for i in addresses:
         if i.operator not in all_clients:
             if not connected_to_peers(i.operator, peer_lists):
-                users = select(u for u in User if (t.operator.operator == i.operator and t.type == EventTypes.NODESTATUS.value for t in u.trackings))
+                users = select(u for u in User if
+                               (t.operator.operator == i.operator and t.type == EventTypes.NODESTATUS.value for t in
+                                u.trackings))
                 operator = Address.get(operator=i.operator)
                 for u in users:
                     label = Label.get(user=u, address=operator)
@@ -53,10 +55,12 @@ def check_status(context):
             else:
                 continue
         else:
-            if not connected_to_peers(i.address, peer_lists): #TODO May be remove this double verification?
-                users = select(u for u in User if (t.operator.operator == i.operator and t.type == EventTypes.NODESTATUS.value for t in u.trackings))
+            if not connected_to_peers(i.operator, peer_lists, is_client=True):  # TODO May be remove this double verification?
+                users = select(u for u in User if
+                               (t.operator.operator == i.operator and t.type == EventTypes.NODESTATUS.value for t in
+                                u.trackings))
                 operator = Address.get(operator=i.operator)
                 for u in users:
                     label = Label.get(user=u, address=operator)
                     operator_link = operator_link.format(i.operator, label.label)
-                    context.bot.send_message(chat_id=u.telegram_id, text=msg, parse_mode='HTML')
+                    context.bot.send_message(chat_id=u.telegram_id, text=msg.format(operator_link), parse_mode='HTML')

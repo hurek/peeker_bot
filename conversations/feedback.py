@@ -1,6 +1,6 @@
 """Here are the functions and ConversationHandler for feedback conversation."""
-from telegram.ext import MessageHandler, Filters, CommandHandler
-from conversations.conv_utils import WAIT_FEEDBACK, CHAT_TIMEOUT, ConversationHandler, back_kb, main_kb, cancel, chat_timeout
+from conversations.conv_utils import WAIT_FEEDBACK, ConversationHandler, main_kb
+from conversations.keyboards import back_kb
 
 
 def feedback(update, context):
@@ -19,15 +19,3 @@ def send_feedback(update, context):
     context.bot.send_message(text=feedback, chat_id=274980096, parse_mode='HTML')
     update.message.reply_text('Your feedback succesfully added!', reply_markup=main_kb)
     return ConversationHandler.END
-
-
-feedback_handler = ConversationHandler(
-    entry_points=[MessageHandler(Filters.regex('^(📨Feedback)$'), feedback)],
-    states={
-        WAIT_FEEDBACK: [MessageHandler(Filters.regex('^(⬅️Back)$'), cancel),
-                        MessageHandler(Filters.text, send_feedback)],
-        ConversationHandler.TIMEOUT: [MessageHandler(Filters.text | Filters.command, chat_timeout)],
-    },
-    conversation_timeout=CHAT_TIMEOUT,
-    fallbacks=[CommandHandler('cancel', cancel), MessageHandler(Filters.regex('^(⬅️Back)$'), cancel)],
-)

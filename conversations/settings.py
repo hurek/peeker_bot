@@ -29,7 +29,7 @@ def language_set(update, context):
 
 
 def donate(update, context):
-    img = open('donation/qr.png', 'rb')
+    img = open('configs/qr.png', 'rb')
     text = '🎁 Your donations help us understand that we are moving in the right direction and making a really cool service!\nOur ETH address is' + \
            f'''<a href="https://etherscan.io/address/0xf592eE0E3a20Ddd65882E0fE6bFBB4B465A98Ae4">0xf592eE0E3a20Ddd65882E0fE6bFBB4B465A98Ae4</a>'''
     update.callback_query.message.reply_photo(photo=img, caption=text, parse_mode='html')

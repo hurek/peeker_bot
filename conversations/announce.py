@@ -1,9 +1,9 @@
 import json
 
 from pony.orm import db_session, select
-from telegram.ext import CommandHandler, ConversationHandler, Filters, MessageHandler
-from conversations.conv_utils import ANNOUNCE, CHAT_TIMEOUT, cancel, chat_timeout
-from configs.db_tools import *
+from telegram.ext import ConversationHandler
+from conversations.conv_utils import ANNOUNCE
+from configs.db_tools import User
 from conversations.keyboards import back_kb
 
 
@@ -26,15 +26,3 @@ def send_announce(update, context):
     for user in users:
         context.bot.send_message(text=message, chat_id=user.telegram_id)
     return ConversationHandler.END
-
-
-announce_handler = ConversationHandler(
-    entry_points=[CommandHandler("announce", announce)],
-    states={
-        ANNOUNCE: [MessageHandler(Filters.regex('^(⬅️Back)$'), cancel),
-                        MessageHandler(Filters.text, send_announce)],
-        ConversationHandler.TIMEOUT: [MessageHandler(Filters.text | Filters.command, chat_timeout)],
-    },
-    conversation_timeout=CHAT_TIMEOUT,
-    fallbacks=[CommandHandler('cancel', cancel), MessageHandler(Filters.regex('^(⬅️Back)$'), cancel)],
-)

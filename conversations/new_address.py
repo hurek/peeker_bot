@@ -4,6 +4,7 @@ from telegram.ext import MessageHandler, Filters, CommandHandler
 
 from conversations.conv_utils import *
 from configs.db_tools import *
+from conversations.keyboards import back_kb
 from conversations.short_name import unique_label
 from notifications.subgraph_utils import *
 import time
@@ -52,16 +53,3 @@ def incorrect_address(update, context):
     update.message.reply_text('Incorrect address. Please send me the Ethereum address.')
     return STORE_ADDRESS
 
-
-# TODO move to handlers.py
-new_address_handler = ConversationHandler(
-    entry_points=[MessageHandler(Filters.regex('^(📝New Address)$'), add_address)],
-    states={
-        STORE_ADDRESS: [MessageHandler(Filters.regex('^(0x[a-fA-F0-9]{40})'), store_address),
-                        MessageHandler(Filters.regex('^(⬅️Back)$'), cancel),
-                        MessageHandler(Filters.text, incorrect_address)],
-        ConversationHandler.TIMEOUT: [MessageHandler(Filters.text | Filters.command, chat_timeout)],
-    },
-    conversation_timeout=CHAT_TIMEOUT,
-    fallbacks=[CommandHandler('cancel', cancel), MessageHandler(Filters.regex('^(⬅️Back)$'), cancel)],
-)

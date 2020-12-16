@@ -1,6 +1,9 @@
 """Here are some functions for conversations."""
 from telegram.ext import ConversationHandler
-from conversations.keyboards import *
+from conversations.keyboards import COURTESYCALLED, CRATIODECREASED, CREATED, FUNDED, \
+    GOTREDEMPTIONSIGNATURE, LIQUIDATED, NODESTATUS, PUBKEYREGISTERED, REDEEMED, REDEMPTIONFEEINCREASED, \
+    REDEMPTIONREQUESTED, \
+    SETUPFAILED, STARTEDLIQUIDATION, main_kb
 from notifications.event_types import EventTypes
 
 ADD_ADDRESS, \

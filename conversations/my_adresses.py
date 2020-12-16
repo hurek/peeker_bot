@@ -2,11 +2,13 @@
 import jsonpickle
 import re
 from pony.orm import db_session, commit, select
-from telegram.ext import CallbackQueryHandler, MessageHandler, CommandHandler, Filters
-from conversations.conv_utils import *
-from configs.db_tools import *
-from notifications.subgraph_utils import *
-from conversations.keyboards import *
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ConversationHandler
+
+from conversations.conv_utils import subscribe_event_dict
+from configs.db_tools import Address, Label, Tracking, User
+from notifications.subgraph_utils import node_stats, node_stats_parser
+from conversations.keyboards import BACK, NEW_NAME, first_operator_inline_kb, keyboard_dict
 
 
 @db_session
@@ -140,16 +142,3 @@ def subscribe_event(update, context):
     update.callback_query.edit_message_reply_markup(inline_message_id=update.callback_query.inline_message_id,
                                             reply_markup=change_inline_kb(user, address))
     return
-
-
-# TODO move to handlers.py
-rename_operator_handler = ConversationHandler(
-    entry_points=[CallbackQueryHandler(rename_operator_address, pattern='^' + str(RENAME) + '$')],
-    states={
-        NEW_NAME: [MessageHandler(Filters.regex('^([a-zA-Z0-9 ]{1,40}$)'), new_operator_name),
-                        MessageHandler(Filters.text, incorrect_name)],
-        ConversationHandler.TIMEOUT: [MessageHandler(Filters.text | Filters.command, chat_timeout)],
-    },
-    conversation_timeout=CHAT_TIMEOUT,
-    fallbacks=[CommandHandler('cancel', cancel), MessageHandler(Filters.regex('^(⬅️Back)$'), cancel)],
-)

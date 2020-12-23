@@ -33,6 +33,10 @@ https://t.me/keep_peeker_bot
 New types of notifications will be added in the near future, as well as the menu interface will be redesigned for the better.
 The Redeem buttons will also be added to critical notifications.
 
+**Support Project**
+
+https://gitcoin.co/grants/1862/peeker-bot
+
 **Contacts**
 
 Discord: rdfbbx#6437

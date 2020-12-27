@@ -5,10 +5,13 @@ from pony.orm import commit, db_session
 from telegram.ext import CallbackQueryHandler, CommandHandler, Filters, MessageHandler, Updater
 from telegram.utils.request import Request
 from polog.flog import flog
+from telegram.utils.webhookhandler import WebhookHandler
+
 from configs.config import TOKEN
 from configs.db_tools import User
-from conversations.handlers import AnnounceHandler, FeedbackHandler, NewAddressHandler, RenameOperatorHandler
-from conversations.keyboards import BACK, CLOSE, CONFIGURE, DELETE, DONATIONS, EXPLORER, LANGUAGE
+from conversations.handlers import AnnounceHandler, FeedbackHandler, NewAddressHandler, RenameOperatorHandler, \
+    UserGuideHandler
+from conversations.keyboards import BACK, CLOSE, CONFIGURE, DELETE, DONATIONS, EXPLORER, LANGUAGE, user_guide_inline_kb
 from conversations.my_adresses import delete_user_address, inline_back, inline_close, inline_configure, my_addresses, \
     subscribe_event
 from conversations.settings import donate, explorers, language_set, settings
@@ -42,7 +45,8 @@ def conversation_handlers():
         AnnounceHandler,
         NewAddressHandler,
         FeedbackHandler,
-        RenameOperatorHandler
+        RenameOperatorHandler,
+        UserGuideHandler
     ]
     return handlers_list
 
@@ -50,14 +54,16 @@ def conversation_handlers():
 @db_session
 def start(update, context):
     if not (p := User.get(telegram_id=update.message.chat_id)):
-        p = User(telegram_id=update.message.from_user.id, username=update.message.from_user.username)
+        p = User(telegram_id=update.message.from_user.id)
+        if update.message.from_user.username:
+            p.username = update.message.from_user.id
         commit()
     update.message.reply_text(text='Hello 👋 I am a beta release of Peeker bot. For this reason if you have any '
                                    'suggestions or ideas you may contact to my creator👨‍💻.\n\nMy specific feature '
                                    'is delicate adjustment ⚙️ of notificationss for every operator address. I already '
                                    'know how to send several types of notificationss, but in the very near future I '
                                    'will learn how to do a lot more!',
-                              reply_markup=main_kb)
+                              reply_markup=user_guide_inline_kb) #TODO change to main
 
 
 @flog
@@ -83,23 +89,9 @@ def main():
 
     dp.add_handler(MessageHandler(Filters.regex('^(⚙️Settings)$'), settings))
 
-    # This is where tasks are added to the scheduler.
-    # The scheduler is built into the telegram library. When I set the same job repeat time, only one job works.
-    # This is the minimum viable version, but I will optimize it soon:
-    # TODO Create one global job
-    updater.job_queue.run_repeating(event_manager, 88, context=EventTypes.CREATEDEVENT, name='createdEvents polling')
-    updater.job_queue.run_repeating(event_manager, 92, context=EventTypes.REDEEMEDEVENT, name='redeemedEvents polling')
-    updater.job_queue.run_repeating(event_manager, 97, context=EventTypes.FUNDEDEVENT, name='fundedEvents polling')
-    updater.job_queue.run_repeating(event_manager, 103, context=EventTypes.SETUPFAILED, name='setupFailed polling')
-    updater.job_queue.run_repeating(event_manager, 109, context=EventTypes.LIQUIDATED, name='liquidated polling')
-    updater.job_queue.run_repeating(event_manager, 115, context=EventTypes.STARTEDLIQUIDATION, name='started liquidation polling')
-    updater.job_queue.run_repeating(event_manager, 119, context=EventTypes.REDEMPTIONREQUESTED, name='redemptionrequested polling')
-    updater.job_queue.run_repeating(event_manager, 124, context=EventTypes.GOTREDEMPTIONSIGNATURE, name='got_redemption_signature polling')
-    updater.job_queue.run_repeating(event_manager, 131, context=EventTypes.PUBKEYREGISTERED, name='pubkey polling')
-    updater.job_queue.run_repeating(event_manager, 137, context=EventTypes.COURTESYCALLED, name='Courtesycalled polling')
-    updater.job_queue.run_repeating(event_manager, 142, context=EventTypes.REDEMPTIONREQUESTED, name='Redemptionfee_increased polling')
-    updater.job_queue.run_repeating(collateralization, 600, name='collateralization_decreased polling')
-    updater.job_queue.run_repeating(check_status, 303, name='node status polling')
+    updater.job_queue.run_repeating(event_manager, 60, name='Global events polling', job_kwargs={"misfire_grace_time": 15})
+    updater.job_queue.run_repeating(collateralization, 90, name='C-Ratio polling', job_kwargs={"misfire_grace_time": 30})
+    updater.job_queue.run_repeating(check_status, 300, name='Node status polling', job_kwargs={"misfire_grace_time": 20})
     updater.start_polling()
     updater.idle()
 

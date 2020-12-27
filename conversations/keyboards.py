@@ -1,5 +1,6 @@
 """Here you can create bot keyboards for various conversations."""
 from telegram import ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
+
 from notifications.event_types import EventTypes
 
 DELETE, CONFIGURE, CLOSE, \
@@ -9,7 +10,7 @@ DONATIONS, FUNDED, BACK, \
 SETUPFAILED, LIQUIDATED, STARTEDLIQUIDATION, \
 REDEMPTIONREQUESTED, GOTREDEMPTIONSIGNATURE, \
 PUBKEYREGISTERED, COURTESYCALLED, REDEMPTIONFEEINCREASED, \
-CRATIODECREASED, NODESTATUS = range(22)
+CRATIODECREASED, NODESTATUS, GUIDE_ENTRY = range(23)
 
 main_keyboard = [['📝New Address', '📖My Addresses'],
                  ['📨Feedback', '⚙️Settings']]
@@ -29,10 +30,16 @@ keyboard_dict = {
     str(REDEMPTIONREQUESTED): {'value': EventTypes.REDEMPTIONREQUESTED.value, 'name': 'Redemption Requested'},
     str(GOTREDEMPTIONSIGNATURE): {'value': EventTypes.GOTREDEMPTIONSIGNATURE.value, 'name': 'Redemption Signature'},
     str(PUBKEYREGISTERED): {'value': EventTypes.PUBKEYREGISTERED.value, 'name': 'Pubkey Registered'},
-    str(CRATIODECREASED): {'value': EventTypes.CRATIODECREASED.value, 'name': 'Collateralization < 130%'},
+    str(CRATIODECREASED): {'value': EventTypes.CRATIODECREASED.value, 'name': 'Collateralization < 135%'},
     str(COURTESYCALLED): {'value': EventTypes.COURTESYCALLED.value, 'name': 'Courtesy Call'},
     str(REDEMPTIONFEEINCREASED): {'value': EventTypes.REDEMPTIONFEEINCREASED.value, 'name': 'Redemption Fee Increased'}
 }
+
+user_guide_inline_keyboard = [[InlineKeyboardButton("Read the Tutorial", callback_data=str(GUIDE_ENTRY))]]
+user_guide_inline_kb = InlineKeyboardMarkup(user_guide_inline_keyboard)
+
+user_guide_my_addresses_inline_keyboard = [[InlineKeyboardButton("Read the Tutorial", callback_data=str(GUIDE_ENTRY))]]
+user_guide_inline_kb = InlineKeyboardMarkup(user_guide_inline_keyboard)
 
 first_inline_keyboard = [
     [
@@ -44,9 +51,10 @@ first_inline_keyboard = [
 first_operator_inline_kb = InlineKeyboardMarkup(first_inline_keyboard)
 
 settings_inline_keyboard = [
-    [InlineKeyboardButton("🌐Explorers", callback_data=str(EXPLORER)),
-     InlineKeyboardButton("🇺🇸Language", callback_data=str(LANGUAGE))
-     ],
+    [
+        InlineKeyboardButton("🌐Explorers", callback_data=str(EXPLORER)),
+        InlineKeyboardButton("🇺🇸Language", callback_data=str(LANGUAGE))
+    ],
     [InlineKeyboardButton("🎁Donate", callback_data=str(DONATIONS))],
     [InlineKeyboardButton("❌Close", callback_data=str(CLOSE))]
 ]
@@ -61,7 +69,5 @@ explorers_inline_keyboard = [
 ]
 explorers_inline_kb = InlineKeyboardMarkup(explorers_inline_keyboard)
 
-back_to_settings_inline_keyboard = [
-    [InlineKeyboardButton("❌Close", callback_data=str(CLOSE))]
-]
+back_to_settings_inline_keyboard = [[InlineKeyboardButton("❌Close", callback_data=str(CLOSE))]]
 back_to_settings_inline_kb = InlineKeyboardMarkup(back_to_settings_inline_keyboard)

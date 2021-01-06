@@ -44,7 +44,10 @@ def store_address(update, context):  # TODO add buttons
 
 def add_address(update, context):
     """Function for sending a message with a suggestion to enter a new address."""
-    update.message.reply_text(text='Submit the Keep operator Ethereum address (format: 0x00...). You can change the address name in the address settings later.', reply_markup=back_kb)
+    update.message.reply_text(text='Submit the Keep operator Ethereum address and custom name <i>(optional)</i>.'
+                                   'You can change the address name in the <b>My Addresses</b> section later.\n\n'
+                                   '<code>Example 1:\n0xb8a3ae209d153560993bfd8178e60f09b1c682e8</code>\n'
+                                   '<code>Example 2:\n0xb8a3ae209d153560993bfd8178e60f09b1c682e8 WhaleOperator</code>', reply_markup=back_kb, parse_mode='html')
     return STORE_ADDRESS
 
 

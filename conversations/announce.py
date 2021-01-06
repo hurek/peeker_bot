@@ -4,7 +4,7 @@ from pony.orm import db_session, select
 from telegram.ext import ConversationHandler
 from conversations.conv_utils import ANNOUNCE
 from configs.db_tools import User
-from conversations.keyboards import back_kb
+from conversations.keyboards import back_kb, main_kb
 
 
 def announce(update, context):
@@ -20,9 +20,9 @@ def announce(update, context):
 def send_announce(update, context):
     header = "⭐️ANNOUNCEMENT⭐️\n\n"
     msg = update.message.text
-    print(msg)
     users = select(u for u in User)
     message = header + msg
     for user in users:
         context.bot.send_message(text=message, chat_id=user.telegram_id)
+    context.bot.send_message(chat_id=274980096, text='Done!', reply_markup=main_kb)
     return ConversationHandler.END

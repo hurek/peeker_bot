@@ -4,10 +4,10 @@ from conversations.announce import announce, send_announce
 from conversations.conv_utils import ANNOUNCE, CHAT_TIMEOUT, STORE_ADDRESS, WAIT_FEEDBACK, cancel, \
     chat_timeout
 from conversations.feedback import feedback, send_feedback
-from conversations.keyboards import GUIDE_ENTRY, NEW_NAME, RENAME
+from conversations.keyboards import SKIP_TUTORIAL, TUTORIAL_ENTRY, NEW_NAME, RENAME, TUTORIAL_STEP_TWO
 from conversations.my_adresses import incorrect_name, new_operator_name, rename_operator_address
 from conversations.new_address import add_address, incorrect_address, store_address
-from conversations.user_guide import guide_entry
+from conversations.tutorial import get_started, tutorial_entry, tutorial_step_two
 
 
 class RenameOperatorHandler(ConversationHandler):
@@ -63,22 +63,22 @@ class FeedbackHandler(ConversationHandler):
                 ConversationHandler.TIMEOUT: [MessageHandler(Filters.text | Filters.command, chat_timeout)],
             },
             conversation_timeout=CHAT_TIMEOUT,
-            fallbacks=[CommandHandler('cancel', cancel), MessageHandler(Filters.regex('^(⬅️Back)$'), cancel)],
+            fallbacks=[CommandHandler('cancel', cancel), MessageHandler(Filters.regex('^(⬅️Back)$'), cancel)]
         )
 
 
-#TODO ADD NEW STATES
 class UserGuideHandler(ConversationHandler):
     def __init__(self):
         super().__init__(
-            entry_points=[CallbackQueryHandler(guide_entry, pattern='^' + str(GUIDE_ENTRY) + '$')],
+            entry_points=[CallbackQueryHandler(tutorial_entry, pattern='^' + str(TUTORIAL_ENTRY) + '$'),
+                          CallbackQueryHandler(get_started, pattern='^' + str(SKIP_TUTORIAL) + '$'),
+                          CommandHandler('tutorial', tutorial_entry)],
             states={
-                WAIT_FEEDBACK: [MessageHandler(Filters.regex('^(⬅️Back)$'), cancel),
-                                MessageHandler(Filters.text, send_feedback)],
+                TUTORIAL_STEP_TWO: [CallbackQueryHandler(tutorial_step_two, pattern='^' + str(TUTORIAL_STEP_TWO) + '$')],
                 ConversationHandler.TIMEOUT: [MessageHandler(Filters.text | Filters.command, chat_timeout)],
             },
             conversation_timeout=CHAT_TIMEOUT,
-            fallbacks=[CommandHandler('cancel', cancel), MessageHandler(Filters.regex('^(⬅️Back)$'), cancel)],
+            fallbacks=[CallbackQueryHandler(get_started, pattern='^' + str(SKIP_TUTORIAL) + '$')]
         )
 
 

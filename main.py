@@ -5,13 +5,13 @@ from pony.orm import commit, db_session
 from telegram.ext import CallbackQueryHandler, CommandHandler, Filters, MessageHandler, Updater
 from telegram.utils.request import Request
 from polog.flog import flog
-from telegram.utils.webhookhandler import WebhookHandler
 
 from configs.config import TOKEN
 from configs.db_tools import User
 from conversations.handlers import AnnounceHandler, FeedbackHandler, NewAddressHandler, RenameOperatorHandler, \
     UserGuideHandler
-from conversations.keyboards import BACK, CLOSE, CONFIGURE, DELETE, DONATIONS, EXPLORER, LANGUAGE, user_guide_inline_kb
+from conversations.keyboards import BACK, CLOSE, CONFIGURE, DELETE, DONATIONS, EXPLORER, LANGUAGE, \
+    tutorial_start_kb
 from conversations.my_adresses import delete_user_address, inline_back, inline_close, inline_configure, my_addresses, \
     subscribe_event
 from conversations.settings import donate, explorers, language_set, settings
@@ -20,7 +20,6 @@ from conversations.conv_utils import main_kb, subscribe_event_dict
 
 # Logger settings
 from notifications.event_manager import collateralization, event_manager
-from notifications.event_types import EventTypes
 from notifications.node_status import check_status
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -56,14 +55,16 @@ def start(update, context):
     if not (p := User.get(telegram_id=update.message.chat_id)):
         p = User(telegram_id=update.message.from_user.id)
         if update.message.from_user.username:
-            p.username = update.message.from_user.id
+            p.username = update.message.from_user.username
         commit()
-    update.message.reply_text(text='Hello 👋 I am a beta release of Peeker bot. For this reason if you have any '
+        update.message.reply_text(text='Hello 👋 I am a beta release of Peeker bot. For this reason if you have any '
                                    'suggestions or ideas you may contact to my creator👨‍💻.\n\nMy specific feature '
                                    'is delicate adjustment ⚙️ of notificationss for every operator address. I already '
                                    'know how to send several types of notificationss, but in the very near future I '
                                    'will learn how to do a lot more!',
-                              reply_markup=user_guide_inline_kb) #TODO change to main
+                              reply_markup=tutorial_start_kb)
+    else:
+        update.message.reply_text(text="Welcome back!", reply_markup=main_kb)
 
 
 @flog
@@ -89,9 +90,9 @@ def main():
 
     dp.add_handler(MessageHandler(Filters.regex('^(⚙️Settings)$'), settings))
 
-    updater.job_queue.run_repeating(event_manager, 60, name='Global events polling', job_kwargs={"misfire_grace_time": 15})
-    updater.job_queue.run_repeating(collateralization, 90, name='C-Ratio polling', job_kwargs={"misfire_grace_time": 30})
-    updater.job_queue.run_repeating(check_status, 300, name='Node status polling', job_kwargs={"misfire_grace_time": 20})
+    updater.job_queue.run_repeating(event_manager, 120, name='Global events polling', job_kwargs={"misfire_grace_time": 30})
+    updater.job_queue.run_repeating(collateralization, 600, name='C-Ratio polling', job_kwargs={"misfire_grace_time": 30})
+    updater.job_queue.run_repeating(check_status, 300, name='Node status polling', job_kwargs={"misfire_grace_time": 30})
     updater.start_polling()
     updater.idle()
 

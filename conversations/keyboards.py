@@ -10,7 +10,7 @@ DONATIONS, FUNDED, BACK, \
 SETUPFAILED, LIQUIDATED, STARTEDLIQUIDATION, \
 REDEMPTIONREQUESTED, GOTREDEMPTIONSIGNATURE, \
 PUBKEYREGISTERED, COURTESYCALLED, REDEMPTIONFEEINCREASED, \
-CRATIODECREASED, NODESTATUS, GUIDE_ENTRY = range(23)
+CRATIODECREASED, NODESTATUS, TUTORIAL_ENTRY, SKIP_TUTORIAL, TUTORIAL_STEP_TWO = range(25)
 
 main_keyboard = [['📝New Address', '📖My Addresses'],
                  ['📨Feedback', '⚙️Settings']]
@@ -35,11 +35,20 @@ keyboard_dict = {
     str(REDEMPTIONFEEINCREASED): {'value': EventTypes.REDEMPTIONFEEINCREASED.value, 'name': 'Redemption Fee Increased'}
 }
 
-user_guide_inline_keyboard = [[InlineKeyboardButton("Read the Tutorial", callback_data=str(GUIDE_ENTRY))]]
-user_guide_inline_kb = InlineKeyboardMarkup(user_guide_inline_keyboard)
+read_tutorial_button = [
+    [InlineKeyboardButton("Read the Tutorial", callback_data=str(TUTORIAL_ENTRY))],
+    [InlineKeyboardButton("Skip", callback_data=str(SKIP_TUTORIAL))]
+]
+tutorial_start_kb = InlineKeyboardMarkup(read_tutorial_button)
 
-user_guide_my_addresses_inline_keyboard = [[InlineKeyboardButton("Read the Tutorial", callback_data=str(GUIDE_ENTRY))]]
-user_guide_inline_kb = InlineKeyboardMarkup(user_guide_inline_keyboard)
+tutorial_step_two_buttons = [
+    [InlineKeyboardButton("Next", callback_data=str(TUTORIAL_STEP_TWO))],
+    [InlineKeyboardButton("Skip", callback_data=str(SKIP_TUTORIAL))]
+]
+tutorial_step_two_kb = InlineKeyboardMarkup(tutorial_step_two_buttons)
+
+tutorial_end_button = [[InlineKeyboardButton("Get started", callback_data=str(SKIP_TUTORIAL))]]
+tutorial_end_kb = InlineKeyboardMarkup(tutorial_end_button)
 
 first_inline_keyboard = [
     [

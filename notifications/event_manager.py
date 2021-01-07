@@ -75,9 +75,9 @@ def get_time_from_db():
     return date.timestamp
 
 
-def put_time_to_db():
+def put_time_to_db(timestamp):
     """Universal function for putting the current timestamp to the database."""
-    current = LastestCheck(timestamp=int(datetime.timestamp(datetime.now())))
+    current = LastestCheck(timestamp=timestamp)
     commit()
     return
 
@@ -150,6 +150,7 @@ def get_active_deposits():
 @db_session
 def event_manager(context):
     """Universal function for managing queries and Event notifications."""
+    current_timestamp = int(datetime.timestamp(datetime.now()))
     timestamp = get_time_from_db()
     try:
         if not (events_data := event_query(timestamp)):
@@ -171,7 +172,7 @@ def event_manager(context):
                         else:
                             msg = return_msg(event_type, event['link'], label.label, address)
                             context.bot.send_message(chat_id=i.telegram_id, text=msg, parse_mode='HTML')
-        put_time_to_db()
+        put_time_to_db(current_timestamp)
     except:
         return
 
